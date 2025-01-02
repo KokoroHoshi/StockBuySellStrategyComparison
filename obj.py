@@ -76,15 +76,16 @@ class Stock:
   
     def _calculate_with_signal(self, buy_dates: pd.Series, sell_dates: pd.Series) -> np.float64:
         trade_entries = self.data[['Close(NTD)']].copy()
+        
 
         for date in buy_dates:
             trade_entries.loc[date, 'Signal'] = 1
         for date in sell_dates:
             trade_entries.loc[date, 'Signal'] = -1
 
-        if trade_entries['Signal'].iloc[-1] == 1:
+        if trade_entries[trade_entries['Signal'].notna()]['Signal'].iloc[-1] == 1:
             trade_entries.loc[self.data.index[-1], 'Signal'] = -1
-        elif trade_entries['Signal'].iloc[-1] == -1:
+        elif trade_entries[trade_entries['Signal'].notna()]['Signal'].iloc[-1]== -1:
             trade_entries.loc[self.data.index[-1], 'Signal'] = 1
         
         trade_entries.dropna(inplace=True)
